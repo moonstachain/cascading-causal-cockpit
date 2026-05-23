@@ -139,3 +139,59 @@
 **对比另一格**：点击 ④ 微盘流动性 × 全A量选 (40% cell) → 6 因子卡 · 🔴6 全失效 · 加权 2026 综合贡献 **−2.01%**。
 
 **因果链一目了然**：健康配方 +0.72% vs 同质待加固配方 −2.01% —— 数字把 v0.1 流程图层定性的"绿配方 vs 红配方"在 cell 层级量化了。
+
+---
+
+## v0.3 升级要点：风格聚类联动（高互动层）
+
+v0.2 把矩阵 cell 下钻到了"单因子卡组"，v0.3 在卡组之上加一层**风格聚类联动**，把孤立卡片织成网络。
+
+### 3 个新字段（每个因子卡）
+
+| 字段 | 类型 | 作用 |
+|---|---|---|
+| `cluster` | str (M1/M2/L1/D1/V1/Ev1…) | 风格聚类编号(同 archetype 内可能 1-3 簇) |
+| `tags` | str[] | 多标签(动量/同质crowding/过拟合signature/红利/…) |
+| `signature` | obj[] | Barra 风格指纹(momentum +0.77 / size −2σ)，pos/warn 编码颜色 |
+
+### 4 向联动
+
+```
+卡片  ←hover/click→  cluster 气泡
+  ↓                       ↓
+tag chip ←click→  聚类洞察侧栏
+```
+
+任意一个触发，另外三个同步高亮（同 cluster=金色 / 同 tag=蓝色 / 非相关=dim 32%）。
+
+### 5 个动感细节（"高审美"落地）
+
+1. 卡片 stagger 入场（60ms 阶梯, cubic-bezier）
+2. 红色失效徽章 2s 脉冲 / 蓝色在研 3s 呼吸
+3. 卡片 hover lift −3px + scale 1.012 + 金色 box-shadow
+4. cluster 气泡大小 ∝ weight，颜色 ∝ state，radial-gradient 立体球感
+5. 签名 chip 警告值（IR>20 / size<−1.8σ）红警告色
+
+### N=1 双 cell 对照数据（scaffold v0.3 dry-run）
+
+**① 健康 × 输出 X（5 因子）**：
+- **2 簇分散**（M1 核心动量 4 / M2 新一代动量 1）
+- 状态 🟢2 🟡2 🔴1
+- 加权 2026 **+0.72%**
+- 多 signature: momentum +0.36/+0.52/+0.77 全谱覆盖
+
+**④ 同质 × 输出 Y（6 因子）**：
+- **仅 1 簇**（L1 微盘同质 6 个）
+- 状态 🔴6 全失效
+- 加权 2026 **−2.89%**
+- signature 全部 size −1.85~−2.05σ + liquidity +0.55（同质指纹）
+
+**3.61pp 差距 × 簇数 2:1** = "风格分散度→业绩"因果链在卡组层级被双轴量化。
+v0.1 看流程图，v0.2 看矩阵数字，v0.3 看气泡视图——三层从定性到定量到结构同时呈现。
+
+### v0.3 checklist 增量
+
+11. [ ] 给每个因子加 `cluster` + `tags` + `signature` 字段
+12. [ ] 验证同 archetype 内是否有 ≥ 2 个 cluster（单簇时 cluster map 退化为"警示信号"——同质 crowding）
+13. [ ] hover 卡片 / click tag chip / click bubble / click 洞察侧栏 四向联动跑一遍
+14. [ ] 关键对照 cell 截图保存（本 reference 第 N=1 对照数据）

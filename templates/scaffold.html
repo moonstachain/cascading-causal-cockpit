@@ -116,6 +116,81 @@ td.matrix-cell:hover::after{opacity:.7}
 .dd-summary{margin-top:12px;padding:10px 13px;background:var(--bg2);border:1px solid var(--line);border-radius:6px;font-size:12px;color:var(--txt2)}
 .dd-summary b{color:var(--gold-s)}
 .dd-empty{padding:24px;text-align:center;color:var(--txt3);font-size:13px;font-style:italic}
+
+/* ===== v0.3 升级: 风格聚类联动 + 动感细节 ===== */
+/* 卡片入场 stagger 动画 */
+@keyframes cardEnter{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.fcard-detail{animation:cardEnter .35s cubic-bezier(.22,.61,.36,1) backwards;will-change:transform,opacity}
+.fcard-grid > .fcard-detail:nth-child(1){animation-delay:.02s}
+.fcard-grid > .fcard-detail:nth-child(2){animation-delay:.08s}
+.fcard-grid > .fcard-detail:nth-child(3){animation-delay:.14s}
+.fcard-grid > .fcard-detail:nth-child(4){animation-delay:.20s}
+.fcard-grid > .fcard-detail:nth-child(5){animation-delay:.26s}
+.fcard-grid > .fcard-detail:nth-child(6){animation-delay:.32s}
+.fcard-grid > .fcard-detail:nth-child(7){animation-delay:.38s}
+.fcard-grid > .fcard-detail:nth-child(n+8){animation-delay:.44s}
+
+/* 卡片 hover lift + glow */
+.fcard-detail{transition:transform .25s cubic-bezier(.22,.61,.36,1),box-shadow .25s,border-color .25s,filter .25s;cursor:pointer;position:relative}
+.fcard-detail:hover{transform:translateY(-3px) scale(1.012);box-shadow:0 8px 26px -10px rgba(200,160,90,.35),0 2px 6px rgba(0,0,0,.4);border-color:var(--gold-d);z-index:5}
+.fcard-detail.cluster-peer{box-shadow:0 0 0 1.5px var(--gold-s),0 0 18px -4px rgba(216,189,134,.55);border-color:var(--gold-s)}
+.fcard-detail.tag-peer{box-shadow:0 0 0 1.5px var(--blue),0 0 14px -4px rgba(106,166,232,.5);border-color:var(--blue)}
+.fcard-detail.dimmed{opacity:.32;filter:saturate(.4)}
+
+/* 状态徽章: 红色失效脉冲(警示) / 蓝色在研呼吸 */
+.fc-state.r{position:relative;overflow:hidden}
+.fc-state.r::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 50%,rgba(229,72,77,.55),transparent 60%);animation:statePulseR 2s ease-in-out infinite;pointer-events:none}
+@keyframes statePulseR{0%,100%{opacity:.35}50%{opacity:.95}}
+.fc-state.b{position:relative;overflow:hidden}
+.fc-state.b::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(106,166,232,.4),transparent 65%);animation:stateBreatheB 3s ease-in-out infinite;pointer-events:none}
+@keyframes stateBreatheB{0%,100%{opacity:.25}50%{opacity:.7}}
+
+/* signature 行 (Barra 风格指纹) */
+.fc-sig{margin:5px 0 6px;display:flex;flex-wrap:wrap;gap:4px;font-size:10.5px}
+.fc-sig .sig-chip{background:var(--surf3);border:1px solid var(--line2);color:var(--txt2);border-radius:10px;padding:1px 7px;font-family:var(--mono);font-size:10px;letter-spacing:.2px}
+.fc-sig .sig-chip.pos{color:#7fe0ad;border-color:#1d4733;background:var(--green-bg)}
+.fc-sig .sig-chip.neg{color:#ff8a8e;border-color:#5a2326;background:var(--red-bg)}
+
+/* tag chips (多标签 · 同标签联动) */
+.fc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px;padding-top:6px;border-top:1px dashed var(--line)}
+.fc-tag{font-size:10px;padding:1.5px 8px;border-radius:10px;background:var(--surf2);color:var(--txt2);border:1px solid var(--line);cursor:pointer;transition:.15s;user-select:none}
+.fc-tag:hover{background:var(--surf3);color:var(--gold-s);border-color:var(--gold-d);transform:translateY(-1px)}
+.fc-tag.active{background:rgba(106,166,232,.18);color:var(--blue);border-color:rgba(106,166,232,.5);box-shadow:0 0 0 1px rgba(106,166,232,.35)}
+
+/* cluster mini-map (风格聚类气泡视图) */
+.cluster-map-wrap{margin-top:14px;padding:12px 14px;background:linear-gradient(180deg,var(--bg2),var(--surf));border:1px solid var(--line2);border-radius:8px}
+.cluster-map-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.cluster-map-head .ttl{font-size:12.5px;color:var(--gold-s);font-weight:700;letter-spacing:.3px}
+.cluster-map-head .ttl::before{content:"◉ ";color:var(--gold)}
+.cluster-map-head .hint{font-size:10.5px;color:var(--txt3)}
+.cluster-map{position:relative;width:100%;height:165px;background:radial-gradient(ellipse at center,rgba(200,160,90,.04),transparent 70%);border:1px dashed var(--line);border-radius:8px;overflow:hidden}
+.cluster-bubble{position:absolute;border-radius:50%;cursor:pointer;transition:transform .3s cubic-bezier(.22,.61,.36,1),box-shadow .25s,filter .25s;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-family:var(--mono);font-weight:700;color:#0a0a0c;text-shadow:0 0 2px rgba(0,0,0,.3);transform:translate(-50%,-50%);will-change:transform}
+.cluster-bubble.s-g{background:radial-gradient(circle at 35% 30%,#5be4a4,#1d8554);box-shadow:0 0 0 1px #3dd68c,0 0 12px rgba(61,214,140,.4)}
+.cluster-bubble.s-y{background:radial-gradient(circle at 35% 30%,#ffd28a,#a87919);box-shadow:0 0 0 1px #f5b53a,0 0 12px rgba(245,181,58,.4)}
+.cluster-bubble.s-r{background:radial-gradient(circle at 35% 30%,#ff7a7e,#9e252a);box-shadow:0 0 0 1px #e5484d,0 0 12px rgba(229,72,77,.45)}
+.cluster-bubble.s-b{background:radial-gradient(circle at 35% 30%,#9bc2ee,#3d6997);box-shadow:0 0 0 1px #6aa6e8,0 0 12px rgba(106,166,232,.4)}
+.cluster-bubble:hover{transform:translate(-50%,-50%) scale(1.25);filter:brightness(1.2);z-index:10}
+.cluster-bubble.active{transform:translate(-50%,-50%) scale(1.35);filter:brightness(1.3) drop-shadow(0 0 8px rgba(216,189,134,.9));z-index:11}
+.cluster-bubble.peer{box-shadow:0 0 0 2px var(--gold-s),0 0 18px rgba(216,189,134,.55)}
+.cluster-bubble.dimmed{opacity:.22;filter:saturate(.3) blur(.5px)}
+.cluster-label{position:absolute;font-size:10px;color:var(--txt3);font-family:var(--mono);letter-spacing:.5px;pointer-events:none;text-transform:uppercase;opacity:.7}
+.cluster-link{position:absolute;height:1px;background:linear-gradient(90deg,transparent,var(--gold-d),transparent);opacity:0;transform-origin:0 50%;pointer-events:none;transition:opacity .3s}
+.cluster-link.show{opacity:.45;animation:linkFlow 2s ease-in-out infinite}
+@keyframes linkFlow{0%,100%{opacity:.25}50%{opacity:.6}}
+
+/* 聚类汇总洞察侧栏 */
+.cluster-insights{margin-top:10px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+.cinsight{background:var(--bg2);border:1px solid var(--line);border-left:2.5px solid var(--gold-d);border-radius:6px;padding:8px 11px;font-size:11px;line-height:1.55;transition:.2s;cursor:pointer}
+.cinsight:hover{border-left-color:var(--gold);background:var(--surf2)}
+.cinsight.active{border-left-color:var(--gold-s);background:var(--surf2);box-shadow:inset 0 0 0 1px rgba(200,160,90,.35)}
+.cinsight .ci-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px}
+.cinsight .ci-name{font-family:var(--mono);font-size:11.5px;color:var(--gold-s);font-weight:700}
+.cinsight .ci-count{font-size:10px;color:var(--txt3)}
+.cinsight .ci-sig{font-size:10px;color:var(--txt2);font-family:var(--mono)}
+.cinsight .ci-rt{font-family:var(--mono);font-weight:700}
+.cinsight .ci-rt.pos{color:var(--green)}
+.cinsight .ci-rt.neg{color:var(--red)}
+
 </style></head><body>
 
 <div class="wrap">
@@ -247,10 +322,10 @@ td.matrix-cell:hover::after{opacity:.7}
       <td class="num heat-g matrix-cell" data-arch="2" data-prod="输出 Z">★ 40%</td>
     </tr>
     <tr>
-      <td>③ archetype 待加固 ⚠</td>
-      <td class="num matrix-cell" data-arch="3" data-prod="输出 X">20%</td>
-      <td class="num heat-r matrix-cell" data-arch="3" data-prod="输出 Y">★ 60%</td>
-      <td class="num matrix-cell" data-arch="3" data-prod="输出 Z">30%</td>
+      <td>④ archetype 同质组 ⚠</td>
+      <td class="num matrix-cell" data-arch="4" data-prod="输出 X">—</td>
+      <td class="num heat-r matrix-cell" data-arch="4" data-prod="输出 Y">★ 60%</td>
+      <td class="num heat-r matrix-cell" data-arch="4" data-prod="输出 Z">30%</td>
     </tr>
   </table></div>
 
@@ -262,33 +337,118 @@ td.matrix-cell:hover::after{opacity:.7}
     <div class="dd-meta" id="dd-meta">—</div>
     <div class="fcard-grid" id="dd-cards"></div>
     <div class="dd-summary" id="dd-summary"></div>
+
+    <!-- v0.3: 风格聚类气泡视图 (cluster mini-map) + 聚类洞察侧栏 -->
+    <div class="cluster-map-wrap" id="cluster-wrap" style="display:none">
+      <div class="cluster-map-head">
+        <span class="ttl">风格聚类视图 (cluster map)</span>
+        <span class="hint">气泡 = 因子 · 大小 ∝ 权重 · 颜色 ∝ 状态 · hover 联动 · 同簇虚线</span>
+      </div>
+      <div class="cluster-map" id="cluster-map"></div>
+      <div class="cluster-insights" id="cluster-insights"></div>
+    </div>
   </div>
 </div>
 
 <script>
-// ===== v0.2 升级: FACTOR_DB + 矩阵下钻 =====
+// ===== v0.3 升级: FACTOR_DB + 风格聚类联动 + cluster map =====
 (function(){
-  // 替换为你的系统的因子库。键 = 因子名,值 = 9 维 metric + 状态 + 注记
+  // 替换为你的系统的因子库
+  // 9 维高密度: arch / dom / ic20 / ic60 / ir60 / sharpe / maxdd / turnover / state
+  // v0.3 新增: cluster (风格聚类编号) / tags (多标签) / signature (Barra 风格指纹)
   var FACTOR_DB={
-    // archetype 1 健康 (Large 域)
-    'Factor-A_Large':{arch:1,dom:'L',ic20:0.22,ic60:0.77,ir60:4.49,sharpe:1.69,maxdd:-0.039,turnover:0.37,state:'g',state_label:'红利期',rt2026:0.0112,weight:35,note:'现役主力,核心贡献者'},
-    'Factor-B_Large':{arch:1,dom:'L',ic20:0.48,ic60:0.70,ir60:2.11,sharpe:2.38,maxdd:-0.046,turnover:0.54,state:'g',state_label:'红利期',rt2026:0.0218,weight:30,note:'新一代主力'},
-    'Factor-C_Large':{arch:1,dom:'L',ic20:0.56,ic60:0.83,ir60:5.89,sharpe:3.85,maxdd:-0.021,turnover:0.61,state:'y',state_label:'震荡',rt2026:-0.0026,weight:20,note:'IC 较高但拟合度边界'},
-    'Factor-D_Large':{arch:1,dom:'L',ic20:0.84,ic60:0.95,ir60:25.18,sharpe:3.64,maxdd:-0.022,turnover:0.43,state:'y',state_label:'平台期',rt2026:-0.0054,weight:15,note:'⚠ IR60 异常高,典型过拟合signature'},
+    // ===== archetype 1 健康 · Large 域 · cluster M1 (核心动量) M2 (新动量) =====
+    'Factor-A_Large':{arch:1,dom:'L',ic20:0.22,ic60:0.77,ir60:4.49,sharpe:1.69,maxdd:-0.039,turnover:0.37,state:'g',state_label:'红利期',rt2026:0.0112,weight:30,
+      cluster:'M1',tags:['动量','低换手','核心主力'],signature:[{k:'momentum',v:0.36,pos:1}],note:'现役主力,分钟因子残差替代日线 barra shift'},
+    'Factor-B_Large':{arch:1,dom:'L',ic20:0.48,ic60:0.70,ir60:2.11,sharpe:2.38,maxdd:-0.046,turnover:0.54,state:'g',state_label:'红利期',rt2026:0.0218,weight:25,
+      cluster:'M2',tags:['动量','纯动量','新一代'],signature:[{k:'momentum',v:0.36,pos:1}],note:'新一代主力,4-14 见顶'},
+    'Factor-C_Large':{arch:1,dom:'L',ic20:0.56,ic60:0.83,ir60:5.89,sharpe:3.85,maxdd:-0.021,turnover:0.61,state:'y',state_label:'震荡',rt2026:-0.0026,weight:20,
+      cluster:'M1',tags:['动量','高换手','拟合边界'],signature:[{k:'momentum',v:0.52,pos:1}],note:'IC 较高但拟合度边界,2-26 见顶回吐'},
+    'Factor-D_Large':{arch:1,dom:'L',ic20:0.75,ic60:0.81,ir60:4.95,sharpe:5.58,maxdd:-0.016,turnover:0.42,state:'r',state_label:'已失效',rt2026:-0.0037,weight:15,
+      cluster:'M1',tags:['动量','已失效','2025周报Top5'],signature:[{k:'momentum',v:0.77,pos:1}],note:'2025 周报 Top5 同系,2026 已转负'},
+    'Factor-E_Large':{arch:1,dom:'L',ic20:0.84,ic60:0.95,ir60:25.18,sharpe:3.64,maxdd:-0.022,turnover:0.43,state:'y',state_label:'平台期',rt2026:-0.0054,weight:10,
+      cluster:'M1',tags:['动量','过拟合signature','平台期'],signature:[{k:'IR60',v:25.18,pos:0,warn:1}],note:'⚠ IR60=25.18 异常高,典型过拟合signature'},
 
-    // archetype 2 震荡 (跨 L,S 两域)
-    'Factor-E_Large':{arch:2,dom:'L',ic20:0.40,ic60:0.55,ir60:3.0,sharpe:1.8,maxdd:-0.045,turnover:0.32,state:'y',state_label:'震荡',rt2026:0.003,weight:50,note:'攻坚中,Large 域表现稳健'},
-    'Factor-F_Small':{arch:2,dom:'S',ic20:0.35,ic60:0.45,ir60:2.0,sharpe:1.3,maxdd:-0.060,turnover:0.55,state:'y',state_label:'震荡',rt2026:-0.005,weight:50,note:'Small 域震荡中'},
+    // ===== archetype 2 量贝塔 · Large 域 · cluster B1 (量贝塔) =====
+    'Factor-F_Large':{arch:2,dom:'L',ic20:0.52,ic60:0.83,ir60:8.44,sharpe:0.94,maxdd:-0.034,turnover:0.57,state:'g',state_label:'红利期',rt2026:0.0044,weight:50,
+      cluster:'B1',tags:['量贝塔','beta暴露','吃极端行情'],signature:[{k:'beta',v:0.42,pos:1}],note:'4-14 仍创新高,beta +0.42 量贝塔型'},
+    'Factor-G_Large':{arch:2,dom:'L',ic20:0.48,ic60:0.82,ir60:6.24,sharpe:2.37,maxdd:-0.045,turnover:0.50,state:'g',state_label:'红利期',rt2026:0.0227,weight:50,
+      cluster:'B1',tags:['量贝塔','进取型','beta暴露'],signature:[{k:'beta',v:0.46,pos:1}],note:'4-14 见顶 +2.97%, beta +0.46 进取型'},
 
-    // archetype 3 待加固 (Small 域,同质)
-    'Factor-G_Small':{arch:3,dom:'S',ic20:0.70,ic60:0.88,ir60:11.30,sharpe:1.88,maxdd:-0.031,turnover:0.56,state:'r',state_label:'已失效',rt2026:-0.0445,weight:30,note:'⚠ size 暴露 −2σ 同质组'},
-    'Factor-H_Small':{arch:3,dom:'S',ic20:0.73,ic60:0.92,ir60:30.56,sharpe:3.47,maxdd:-0.010,turnover:0.55,state:'r',state_label:'已失效',rt2026:-0.0399,weight:25,note:'⚠ IR 最高,实盘最惨,典型过拟合'},
-    'Factor-I_Small':{arch:3,dom:'S',ic20:0.68,ic60:0.90,ir60:25.49,sharpe:2.67,maxdd:-0.012,turnover:0.48,state:'r',state_label:'已失效',rt2026:-0.0168,weight:25,note:'同质 size 暴露'},
-    '其他 5 个 _Small 因子':{arch:3,dom:'S',ic20:0,ic60:0,ir60:0,sharpe:0,maxdd:0,turnover:0,state:'r',state_label:'同质组',rt2026:-0.02,weight:20,note:'聚合卡:其余 5 因子,Barra 同质,2026 普遍走弱'}
+    // ===== archetype 3 日内套压 · Small/Micro · cluster I1 (在研增量) =====
+    'Factor-H_SmallMicro':{arch:3,dom:'S,Mi',ic20:0.68,ic60:0.72,ir60:5.5,sharpe:3.0,maxdd:-0.025,turnover:0.80,state:'b',state_label:'在研',rt2026:0,weight:50,
+      cluster:'I1',tags:['日内','在研','1min残差'],signature:[{k:'IC',v:0.68,pos:1}],note:'1min 量中心化去整体产量, 残差量衡量套压'},
+    'Factor-I_SmallMicro':{arch:3,dom:'S,Mi',ic20:0.55,ic60:0.60,ir60:4.0,sharpe:2.5,maxdd:-0.030,turnover:0.85,state:'b',state_label:'在研',rt2026:0,weight:50,
+      cluster:'I1',tags:['日内','在研','冲量'],signature:[{k:'IC',v:0.60,pos:1}],note:'与套压结合后整体 IC 到 10, 沾 beta 会失去价值'},
+
+    // ===== archetype 4 微盘流动性反转 · Small/Micro · cluster L1 (同质crowding组) =====
+    'Factor-J_Small':{arch:4,dom:'S',ic20:0.70,ic60:0.88,ir60:11.30,sharpe:1.88,maxdd:-0.031,turnover:0.56,state:'r',state_label:'已失效',rt2026:-0.0445,weight:18,
+      cluster:'L1',tags:['同质crowding','size−2σ','liquidity+','Small域最差'],signature:[{k:'size',v:-1.99,pos:0,warn:1},{k:'liquidity',v:0.55,pos:1}],note:'⚠ Small 域最差 −4.45%, size −1.99σ'},
+    'Factor-K_Small':{arch:4,dom:'S',ic20:0.73,ic60:0.92,ir60:30.56,sharpe:3.47,maxdd:-0.010,turnover:0.55,state:'r',state_label:'已失效',rt2026:-0.0399,weight:16,
+      cluster:'L1',tags:['同质crowding','过拟合signature','回测最美'],signature:[{k:'IR60',v:30.56,pos:0,warn:1},{k:'size',v:-2.05,pos:0,warn:1}],note:'⚠ 库内 IR60 最高,实盘最惨,回测越完美越脆'},
+    'Factor-L_Small':{arch:4,dom:'S',ic20:0.68,ic60:0.90,ir60:25.49,sharpe:2.67,maxdd:-0.012,turnover:0.48,state:'r',state_label:'已失效',rt2026:-0.0168,weight:14,
+      cluster:'L1',tags:['同质crowding','高拟合','size暴露'],signature:[{k:'IR60',v:25.49,pos:0,warn:1}],note:'IR60=25.49 高拟合, 2026 走弱'},
+    'Factor-M_Small':{arch:4,dom:'S',ic20:0.40,ic60:0.71,ir60:3.55,sharpe:3.94,maxdd:-0.027,turnover:0.55,state:'r',state_label:'震荡',rt2026:-0.0325,weight:10,
+      cluster:'L1',tags:['同质crowding','2025爆款','2026失血'],signature:[{k:'size',v:-1.85,pos:0,warn:1}],note:'2025 实盘超额 23%, 2026 失血'},
+    'Factor-N_Small':{arch:4,dom:'S',ic20:0.70,ic60:0.81,ir60:12.54,sharpe:3.33,maxdd:-0.018,turnover:0.45,state:'r',state_label:'震荡',rt2026:-0.0268,weight:8,
+      cluster:'L1',tags:['同质crowding','size暴露'],signature:[{k:'size',v:-1.88,pos:0,warn:1}],note:'同质 size 暴露, 失血'},
+    'Factor-O_Small (聚合·其他 17 个)':{arch:4,dom:'S',ic20:0,ic60:0,ir60:0,sharpe:0,maxdd:0,turnover:0,state:'r',state_label:'同质组',rt2026:-0.020,weight:34,
+      cluster:'L1',tags:['同质crowding','聚合卡','91%转负'],signature:[{k:'同质指纹',v:0,pos:0,warn:1}],note:'聚合卡: 17 因子 Barra 同质 size−2σ+liquidity+, 2026 合计 91% 转负'},
+
+    // ===== archetype 5 机构散户背离 · Large · cluster D1 (低波防御) =====
+    'Factor-P_Large':{arch:5,dom:'L',ic20:0.40,ic60:0.55,ir60:3.2,sharpe:2.1,maxdd:-0.033,turnover:0.30,state:'r',state_label:'已失效',rt2026:-0.0262,weight:60,
+      cluster:'D1',tags:['低波防御','dividend+','residual_vol−','当期失效'],signature:[{k:'residual_vol',v:-0.64,pos:0},{k:'dividend',v:0.59,pos:1}],note:'防御型, 2026 失效'},
+    'Factor-Q_Large':{arch:5,dom:'L',ic20:0.30,ic60:0.45,ir60:2.5,sharpe:1.5,maxdd:-0.045,turnover:0.32,state:'y',state_label:'震荡',rt2026:-0.0148,weight:40,
+      cluster:'D1',tags:['低波防御','leverage+','偏防御'],signature:[{k:'leverage',v:0.20,pos:1},{k:'mid_cap',v:0.18,pos:1}],note:'leverage +0.20 mid_cap +0.18 偏防御'},
+
+    // ===== archetype 6 高波量占比 / 残差能量 · L,M · cluster E1 =====
+    'Factor-R_Large':{arch:6,dom:'L,M,S',ic20:0.45,ic60:0.60,ir60:4.0,sharpe:2.8,maxdd:-0.028,turnover:0.40,state:'y',state_label:'迭代中',rt2026:-0.005,weight:35,
+      cluster:'E1',tags:['残差能量','工程迭代','Large域更优'],signature:[{k:'IC60',v:0.60,pos:1}],note:'老 028 重构为新片段主导因子, Large 域更高'},
+    'Factor-S_Large':{arch:6,dom:'L',ic20:0.40,ic60:0.55,ir60:3.5,sharpe:2.5,maxdd:-0.030,turnover:0.45,state:'y',state_label:'迭代中',rt2026:0.002,weight:35,
+      cluster:'E1',tags:['残差能量','大能量贝塔'],signature:[{k:'beta',v:0.30,pos:1}],note:'2024 H2 未吃到太多 beta 收益, 风格调整'},
+    'Factor-T_LargeMid':{arch:6,dom:'L,M',ic20:0.35,ic60:0.50,ir60:3.0,sharpe:2.0,maxdd:-0.025,turnover:0.42,state:'y',state_label:'迭代中',rt2026:0.001,weight:30,
+      cluster:'E1',tags:['残差能量','防守型','15pt增益'],signature:[{k:'IC60',v:0.50,pos:1}],note:'残差能量调整后, Large 上 15 个点增益'},
+
+    // ===== archetype 7 基本面成长 · L,M,S · cluster F1 =====
+    'Factor-U_All':{arch:7,dom:'L,M,S',ic20:0.18,ic60:0.35,ir60:1.8,sharpe:1.4,maxdd:-0.045,turnover:0.20,state:'g',state_label:'在研增量',rt2026:0.003,weight:60,
+      cluster:'F1',tags:['基本面','成长','低换手','三差'],signature:[{k:'growth',v:0.45,pos:1}],note:'小市值年化 ~22%, 加入组合立竿见影'},
+    'Factor-V_Large':{arch:7,dom:'L',ic20:0.10,ic60:0.20,ir60:1.0,sharpe:0.8,maxdd:-0.038,turnover:0.10,state:'y',state_label:'稳健低收',rt2026:0.001,weight:25,
+      cluster:'F1',tags:['基本面','红利','超低换手'],signature:[{k:'dividend',v:0.62,pos:1}],note:'近12月分红/市值, 前200股年化 10-11%'},
+    'Factor-W_LargeMid':{arch:7,dom:'L,M',ic20:0.05,ic60:0.08,ir60:0.5,sharpe:0.6,maxdd:-0.040,turnover:0.15,state:'y',state_label:'迭代中',rt2026:0,weight:15,
+      cluster:'F1',tags:['基本面','无形资产','残差回归'],signature:[{k:'IC60',v:0.08,pos:1}],note:'市值回归取残差, IC 0.03-0.1, 费后 ~5%'},
+
+    // ===== archetype 8 基本面价值 · L · cluster V1 =====
+    'Factor-X_Large':{arch:8,dom:'L',ic20:0.40,ic60:0.55,ir60:3.0,sharpe:1.8,maxdd:-0.045,turnover:0.32,state:'r',state_label:'已失效',rt2026:-0.0261,weight:30,
+      cluster:'V1',tags:['价值','BP+','低波混合','当期失效'],signature:[{k:'BP',v:0.61,pos:1},{k:'residual_vol',v:-0.58,pos:0}],note:'BP +0.61 价值+低波混合, 2026 失效'},
+    'Factor-Y_Large':{arch:8,dom:'L',ic20:0.50,ic60:0.82,ir60:6.80,sharpe:3.42,maxdd:-0.022,turnover:0.34,state:'r',state_label:'已失效',rt2026:-0.0035,weight:35,
+      cluster:'V1',tags:['价值','深度价值','BP最深','earnings_yield'],signature:[{k:'BP',v:0.83,pos:1},{k:'earnings_yield',v:0.60,pos:1}],note:'BP +0.83 最深价值, 3-31 见顶后崩 3.68pt'},
+    'Factor-Z_LargeMid':{arch:8,dom:'L,M',ic20:0,ic60:0,ir60:0,sharpe:0,maxdd:0,turnover:0,state:'b',state_label:'未做出',rt2026:0,weight:25,
+      cluster:'V1',tags:['价值','长期短板','PB-ROE攻坚'],signature:[{k:'攻坚中',v:0,pos:0}],note:'⚠ 长期短板, 团队公认做不出, PLE 框架在研'},
+
+    // ===== archetype 9 净利润断层 · 事件驱动 · cluster Ev1 =====
+    'Factor-AA_All':{arch:9,dom:'L,M,S',ic20:0,ic60:0,ir60:2.2,sharpe:0,maxdd:-0.06,turnover:0,state:'b',state_label:'在研',rt2026:0,weight:55,
+      cluster:'Ev1',tags:['事件驱动','公告跳空','180天超额'],signature:[{k:'IR',v:2.2,pos:1}],note:'公告跳空高开+过滤日内高开低走, 180 天超额持续'},
+    'Factor-BB_All':{arch:9,dom:'L,M,S',ic20:0,ic60:0,ir60:2.2,sharpe:0,maxdd:-0.06,turnover:0,state:'b',state_label:'在研',rt2026:0,weight:45,
+      cluster:'Ev1',tags:['事件驱动','研报情绪','90天窗口'],signature:[{k:'IR',v:2.2,pos:1}],note:'理匡可能超预期表 +1正/−1负, 90 天窗口, 多头超额 ~12%'}
   };
 
-  var PRODUCT_DOMS={'输出 X':['L'],'输出 Y':['S'],'输出 Z':['L','S']};
-  var ARCH_NAMES={1:'① archetype 健康',2:'② archetype 震荡',3:'③ archetype 待加固'};
+  // 产品 → 域映射
+  var PRODUCT_DOMS={'输出 X':['L'],'输出 Y':['S'],'输出 Z':['L','S','Mi']};
+  // archetype 编号 → 名称
+  var ARCH_NAMES={
+    1:'① archetype 健康',2:'② archetype 震荡',3:'③ archetype 待加固',
+    4:'④ archetype 同质组',5:'⑤ archetype 防御',6:'⑥ archetype 迭代',
+    7:'⑦ archetype 成长',8:'⑧ archetype 价值',9:'⑨ archetype 事件'
+  };
+  // 风格聚类编号 → 显示名 (中央叙事单元)
+  var CLUSTER_NAMES={
+    M1:'M1 · 核心动量',M2:'M2 · 新一代动量',
+    B1:'B1 · 量贝塔',I1:'I1 · 日内套压',
+    L1:'L1 · 微盘同质 ⚠',
+    D1:'D1 · 低波防御',E1:'E1 · 残差能量',
+    F1:'F1 · 基本面成长',V1:'V1 · 深度价值',
+    Ev1:'Ev1 · 事件驱动'
+  };
 
   var ddPanel=document.getElementById('matrix-drilldown');
   var ddArch=document.getElementById('dd-arch');
@@ -303,11 +463,29 @@ td.matrix-cell:hover::after{opacity:.7}
   function fmtPct(v){return v?((v>0?'+':'')+(v*100).toFixed(2)+'%'):'—';}
   function fmtNum(v,d){return v?v.toFixed(d===undefined?2:d):'—';}
 
-  function renderCard(name,f){
+  // v0.3 新增 DOM ref
+  var clusterWrap=document.getElementById('cluster-wrap');
+  var clusterMap=document.getElementById('cluster-map');
+  var clusterInsights=document.getElementById('cluster-insights');
+  var currentMatched=[];   // 当前下钻的 [name, f] 数组
+  var activeTag=null;
+  var activeCluster=null;
+
+  // ===== 渲染单因子卡 (v0.3 + tag chips + signature) =====
+  function renderCard(name,f,idx){
     var s=f.state||'b';
     var rtClass=f.rt2026>0?'pos':(f.rt2026<0?'neg':'amb');
-    return '<div class="fcard-detail state-'+s+'">'+
+    var sigHtml=(f.signature||[]).map(function(sg){
+      var cls=sg.warn?'neg':(sg.pos?'pos':'');
+      var val=(typeof sg.v==='number' && sg.v!==0)?(sg.v>0?'+':'')+sg.v.toFixed(2):'';
+      return '<span class="sig-chip '+cls+'">'+sg.k+' '+val+'</span>';
+    }).join('');
+    var tagsHtml=(f.tags||[]).map(function(t){
+      return '<span class="fc-tag" data-tag="'+t+'">#'+t+'</span>';
+    }).join('');
+    return '<div class="fcard-detail state-'+s+'" data-name="'+name+'" data-cluster="'+(f.cluster||'')+'" data-state="'+s+'">'+
       '<div class="fc-head"><span class="fc-name">'+name+'</span><span class="fc-state '+s+'">'+(f.state_label||'')+'</span></div>'+
+      (sigHtml?'<div class="fc-sig">'+sigHtml+'</div>':'')+
       '<div class="fc-metrics">'+
         '<div class="fc-metric"><span class="ml">IC20</span><span class="mv">'+fmtNum(f.ic20,2)+'</span></div>'+
         '<div class="fc-metric"><span class="ml">IC60</span><span class="mv">'+fmtNum(f.ic60,2)+'</span></div>'+
@@ -318,21 +496,206 @@ td.matrix-cell:hover::after{opacity:.7}
       '</div>'+
       '<div class="fc-foot">'+
         '<span>2026 实盘: <b class="'+rtClass+'">'+fmtPct(f.rt2026)+'</b></span>'+
-        '<span>arch 权重: <b style="color:var(--gold-s)">'+(f.weight||'?')+'%</b></span>'+
+        '<span>权重: <b style="color:var(--gold-s)">'+(f.weight||'?')+'%</b></span>'+
       '</div>'+
       '<div class="fc-note">'+(f.note||'')+'</div>'+
+      (tagsHtml?'<div class="fc-tags">'+tagsHtml+'</div>':'')+
       '</div>';
+  }
+
+  // ===== 渲染风格聚类气泡视图 + 聚类洞察侧栏 =====
+  function renderClusterMap(matched){
+    if(matched.length<2){clusterWrap.style.display='none';return;}
+    // 聚 cluster
+    var groups={}; matched.forEach(function(p){var k=p[1].cluster||'_';(groups[k]=groups[k]||[]).push(p);});
+    var clusterIds=Object.keys(groups);
+    if(clusterIds.length===0){clusterWrap.style.display='none';return;}
+
+    clusterWrap.style.display='block';
+    var W=clusterMap.clientWidth||780, H=165;
+    var n=clusterIds.length;
+    // 给每个 cluster 分配中心点 (横向平均分布)
+    var centers={};
+    clusterIds.forEach(function(cid,i){
+      centers[cid]={x:W*(i+0.5)/n, y:H/2};
+    });
+
+    // 计算最大 weight 用于缩放
+    var maxW=Math.max.apply(null,matched.map(function(p){return p[1].weight||5}));
+    var bubblesHtml='';
+    var labelsHtml='';
+    clusterIds.forEach(function(cid){
+      var c=centers[cid];
+      labelsHtml+='<div class="cluster-label" style="left:'+(c.x-40)+'px;top:'+(c.y+62)+'px;width:80px;text-align:center">'+(CLUSTER_NAMES[cid]||cid)+'</div>';
+      var items=groups[cid];
+      // 在 cluster 中心周围按圆形布局
+      items.forEach(function(p,j){
+        var f=p[1], name=p[0];
+        var size=18+(f.weight||5)/maxW*32; // 18-50px
+        var angle=(j/items.length)*Math.PI*2 - Math.PI/2;
+        var r=items.length>1?Math.min(38,12+items.length*4):0;
+        var x=c.x + Math.cos(angle)*r;
+        var y=c.y + Math.sin(angle)*r;
+        bubblesHtml+='<div class="cluster-bubble s-'+(f.state||'b')+'" '+
+          'data-name="'+name+'" data-cluster="'+cid+'" '+
+          'style="left:'+x+'px;top:'+y+'px;width:'+size+'px;height:'+size+'px" '+
+          'title="'+name+' · '+(f.state_label||'')+' · '+(f.weight||0)+'%">'+
+          (f.weight||'')+'</div>';
+      });
+    });
+    clusterMap.innerHTML=bubblesHtml+labelsHtml;
+
+    // 渲染聚类洞察侧栏
+    var insightsHtml=clusterIds.map(function(cid){
+      var items=groups[cid];
+      var rt=items.reduce(function(s,p){return s+(p[1].rt2026||0)*(p[1].weight||0)/100;},0);
+      var totalW=items.reduce(function(s,p){return s+(p[1].weight||0);},0);
+      var stateCount={g:0,y:0,r:0,b:0};
+      items.forEach(function(p){stateCount[p[1].state]=(stateCount[p[1].state]||0)+1;});
+      // 主导风格签名 (取频率最高的)
+      var sigFreq={};
+      items.forEach(function(p){(p[1].signature||[]).forEach(function(s){sigFreq[s.k]=(sigFreq[s.k]||0)+1;});});
+      var topSig=Object.keys(sigFreq).sort(function(a,b){return sigFreq[b]-sigFreq[a];})[0]||'—';
+      var rtCls=rt>0?'pos':(rt<0?'neg':'');
+      var dots='';
+      if(stateCount.g)dots+='<span style="color:var(--green)">●</span>'.repeat(stateCount.g);
+      if(stateCount.y)dots+='<span style="color:var(--amber)">●</span>'.repeat(stateCount.y);
+      if(stateCount.r)dots+='<span style="color:var(--red)">●</span>'.repeat(stateCount.r);
+      if(stateCount.b)dots+='<span style="color:var(--blue)">●</span>'.repeat(stateCount.b);
+      return '<div class="cinsight" data-cluster="'+cid+'">'+
+        '<div class="ci-head"><span class="ci-name">'+(CLUSTER_NAMES[cid]||cid)+'</span><span class="ci-count">'+items.length+' 因子 · 共 '+totalW+'%</span></div>'+
+        '<div class="ci-sig">'+dots+' · 签名: '+topSig+'</div>'+
+        '<div style="display:flex;justify-content:space-between;margin-top:3px">'+
+          '<span style="color:var(--txt3);font-size:10px">加权 2026</span>'+
+          '<span class="ci-rt '+rtCls+'">'+(rt>0?'+':'')+(rt*100).toFixed(2)+'%</span>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+    clusterInsights.innerHTML=insightsHtml;
+
+    bindClusterInteractions();
+  }
+
+  // ===== 联动: hover 卡片 / 气泡 / cluster / tag =====
+  function highlightByCluster(cid){
+    if(!cid){clearHighlight();return;}
+    activeCluster=cid; activeTag=null;
+    document.querySelectorAll('.fcard-detail').forEach(function(c){
+      var match=c.dataset.cluster===cid;
+      c.classList.toggle('cluster-peer',match);
+      c.classList.toggle('dimmed',!match);
+      c.classList.remove('tag-peer');
+    });
+    document.querySelectorAll('.cluster-bubble').forEach(function(b){
+      var match=b.dataset.cluster===cid;
+      b.classList.toggle('peer',match);
+      b.classList.toggle('dimmed',!match);
+    });
+    document.querySelectorAll('.cinsight').forEach(function(c){c.classList.toggle('active',c.dataset.cluster===cid);});
+  }
+  function highlightByTag(tag){
+    if(!tag){clearHighlight();return;}
+    activeTag=tag; activeCluster=null;
+    document.querySelectorAll('.fcard-detail').forEach(function(c){
+      var tags=Array.from(c.querySelectorAll('.fc-tag')).map(function(t){return t.dataset.tag;});
+      var match=tags.indexOf(tag)>=0;
+      c.classList.toggle('tag-peer',match);
+      c.classList.toggle('dimmed',!match);
+      c.classList.remove('cluster-peer');
+    });
+    // 同步 tag chip active 态
+    document.querySelectorAll('.fc-tag').forEach(function(t){t.classList.toggle('active',t.dataset.tag===tag);});
+    // cluster map 也 dim 非相关 bubble
+    document.querySelectorAll('.cluster-bubble').forEach(function(b){
+      var name=b.dataset.name; var f=FACTOR_DB[name];
+      var match=f && (f.tags||[]).indexOf(tag)>=0;
+      b.classList.toggle('peer',match);
+      b.classList.toggle('dimmed',!match);
+    });
+  }
+  function clearHighlight(){
+    activeCluster=null; activeTag=null;
+    document.querySelectorAll('.fcard-detail').forEach(function(c){c.classList.remove('cluster-peer','tag-peer','dimmed');});
+    document.querySelectorAll('.cluster-bubble').forEach(function(b){b.classList.remove('peer','dimmed','active');});
+    document.querySelectorAll('.cinsight').forEach(function(c){c.classList.remove('active');});
+    document.querySelectorAll('.fc-tag').forEach(function(t){t.classList.remove('active');});
+  }
+
+  function bindClusterInteractions(){
+    // bubble hover/click → cluster 联动
+    document.querySelectorAll('.cluster-bubble').forEach(function(b){
+      b.addEventListener('mouseenter',function(){
+        if(activeCluster||activeTag)return;
+        var cid=b.dataset.cluster;
+        document.querySelectorAll('.cluster-bubble').forEach(function(bb){bb.classList.toggle('peer',bb.dataset.cluster===cid&&bb!==b);});
+        b.classList.add('active');
+        // 卡片镜像高亮
+        document.querySelectorAll('.fcard-detail').forEach(function(c){c.classList.toggle('cluster-peer',c.dataset.cluster===cid&&c.dataset.name!==b.dataset.name);});
+        // 找到对应卡片放大
+        var card=document.querySelector('.fcard-detail[data-name="'+b.dataset.name+'"]');
+        if(card){card.classList.remove('dimmed'); card.style.transform='translateY(-3px) scale(1.03)'; card.style.boxShadow='0 0 0 2px var(--gold-s),0 8px 24px rgba(216,189,134,.4)'; card.style.zIndex=6;}
+      });
+      b.addEventListener('mouseleave',function(){
+        if(activeCluster||activeTag)return;
+        b.classList.remove('active');
+        document.querySelectorAll('.cluster-bubble').forEach(function(bb){bb.classList.remove('peer');});
+        document.querySelectorAll('.fcard-detail').forEach(function(c){c.classList.remove('cluster-peer');c.style.transform='';c.style.boxShadow='';c.style.zIndex='';});
+      });
+      b.addEventListener('click',function(e){
+        e.stopPropagation();
+        var cid=b.dataset.cluster;
+        if(activeCluster===cid){clearHighlight();return;}
+        highlightByCluster(cid);
+        var card=document.querySelector('.fcard-detail[data-name="'+b.dataset.name+'"]');
+        if(card)card.scrollIntoView({behavior:'smooth',block:'nearest'});
+      });
+    });
+    // cinsight click → cluster 联动
+    document.querySelectorAll('.cinsight').forEach(function(ci){
+      ci.addEventListener('click',function(e){
+        e.stopPropagation();
+        var cid=ci.dataset.cluster;
+        if(activeCluster===cid){clearHighlight();return;}
+        highlightByCluster(cid);
+      });
+    });
+    // 卡片 hover → cluster 联动 + 气泡放大
+    document.querySelectorAll('.fcard-detail').forEach(function(c){
+      c.addEventListener('mouseenter',function(){
+        if(activeCluster||activeTag)return;
+        var cid=c.dataset.cluster;
+        document.querySelectorAll('.fcard-detail').forEach(function(cc){cc.classList.toggle('cluster-peer',cc.dataset.cluster===cid && cc!==c);});
+        var bubble=document.querySelector('.cluster-bubble[data-name="'+c.dataset.name+'"]');
+        if(bubble){bubble.classList.add('active');}
+        document.querySelectorAll('.cluster-bubble').forEach(function(bb){if(bb.dataset.cluster===cid&&bb!==bubble)bb.classList.add('peer');});
+      });
+      c.addEventListener('mouseleave',function(){
+        if(activeCluster||activeTag)return;
+        document.querySelectorAll('.fcard-detail').forEach(function(cc){cc.classList.remove('cluster-peer');});
+        document.querySelectorAll('.cluster-bubble').forEach(function(bb){bb.classList.remove('active','peer');});
+      });
+    });
+    // tag chip click → tag 联动
+    document.querySelectorAll('.fc-tag').forEach(function(t){
+      t.addEventListener('click',function(e){
+        e.stopPropagation();
+        var tag=t.dataset.tag;
+        if(activeTag===tag){clearHighlight();return;}
+        highlightByTag(tag);
+      });
+    });
   }
 
   function activateCell(cell){
     if(activeCell)activeCell.classList.remove('active');
     activeCell=cell; cell.classList.add('active');
+    clearHighlight();
     var archId=parseInt(cell.dataset.arch);
     var prod=cell.dataset.prod;
     var pct=cell.textContent.replace(/[\s★]/g,'').trim();
     ddArch.textContent=ARCH_NAMES[archId]||archId;
     ddProd.textContent=prod;
-    ddMeta.innerHTML='该 archetype 在 <b>'+prod+'</b> 输出中占 <b style="color:var(--gold)">'+pct+'</b> 配方贡献。展开后看构成该 archetype 的实际单因子卡组：';
+    ddMeta.innerHTML='该 archetype 在 <b>'+prod+'</b> 输出中占 <b style="color:var(--gold)">'+pct+'</b> 配方贡献。卡片底部 <b>#tag</b> 可点击联动同标签因子,下方气泡视图反向追溯风格簇。';
 
     var targetDoms=PRODUCT_DOMS[prod]||[];
     var matched=[];
@@ -348,23 +711,26 @@ td.matrix-cell:hover::after{opacity:.7}
       if(d!==0) return d;
       return (b[1].weight||0)-(a[1].weight||0);
     });
+    currentMatched=matched;
 
     if(matched.length===0){
       ddCards.innerHTML='<div class="dd-empty">该组合的单因子数据待录入或在研中</div>';
-      ddSummary.innerHTML='';
+      ddSummary.innerHTML=''; clusterWrap.style.display='none';
     }else{
-      ddCards.innerHTML=matched.map(function(p){return renderCard(p[0],p[1])}).join('');
+      ddCards.innerHTML=matched.map(function(p,i){return renderCard(p[0],p[1],i)}).join('');
       var sumG=matched.filter(function(p){return p[1].state==='g'}).length;
       var sumY=matched.filter(function(p){return p[1].state==='y'}).length;
       var sumR=matched.filter(function(p){return p[1].state==='r'}).length;
       var sumB=matched.filter(function(p){return p[1].state==='b'}).length;
       var totalRt=matched.reduce(function(s,p){return s+(p[1].rt2026||0)*(p[1].weight||0)/100},0);
-      ddSummary.innerHTML='<b>'+matched.length+' 个因子</b>构成此 archetype · 状态: '+
+      var clusterCount=Object.keys(matched.reduce(function(o,p){o[p[1].cluster||'_']=1;return o;},{})).length;
+      ddSummary.innerHTML='<b>'+matched.length+' 个因子 · '+clusterCount+' 个风格簇</b> · 状态: '+
         (sumG?'<span style="color:var(--green)">🟢 红利 '+sumG+'</span> ':'')+
         (sumY?'<span style="color:var(--amber)">🟡 震荡 '+sumY+'</span> ':'')+
         (sumR?'<span style="color:var(--red)">🔴 失效 '+sumR+'</span> ':'')+
         (sumB?'<span style="color:var(--blue)">🔵 在研 '+sumB+'</span>':'')+
         ' · 加权 2026 综合贡献: <b style="font-family:var(--mono);color:'+(totalRt>0?'var(--green)':'var(--red)')+'">'+(totalRt>0?'+':'')+(totalRt*100).toFixed(2)+'%</b>';
+      renderClusterMap(matched);
     }
     ddPanel.classList.add('show');
     ddPanel.scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -372,6 +738,11 @@ td.matrix-cell:hover::after{opacity:.7}
 
   document.querySelectorAll('td.matrix-cell').forEach(function(cell){
     cell.addEventListener('click',function(){if(activeCell===cell){closeDD();return;}activateCell(cell);});
+  });
+  // 点击空白处取消 cluster/tag 高亮
+  document.addEventListener('click',function(e){
+    if(e.target.closest('#matrix-drilldown'))return;
+    if(activeCluster||activeTag)clearHighlight();
   });
 })();
 </script>

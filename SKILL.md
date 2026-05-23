@@ -18,11 +18,12 @@ triggers:
   - "multi-layer causal map"
 maturity: experimental
 status: n=1-completed
-version: 0.2
+version: 0.3
 created: 2026-05-23
 updated: 2026-05-23
 license: MIT
 changelog:
+  - "v0.3 (2026-05-23): 支柱 6 升级 —— 因子卡组「风格聚类联动」高互动层。每卡多 3 字段(cluster/tags/signature),浮出 cluster mini-map 气泡视图(大小∝权重·颜色∝状态),hover/click 触发卡-气泡-tag-洞察侧栏四向联动,加载 stagger 入场,状态徽章脉冲呼吸。N=1 验证:健康 cell 5 因子 2 簇 +0.72% vs 同质 cell 6 因子 1 簇 −2.89%,簇数差直接量化「风格分散度→业绩」因果"
   - "v0.2 (2026-05-23): 支柱 5 升级 —— 矩阵单元下钻到单因子多标签卡组（IC20/IC60/IR60/夏普/回撤/换手/2026实盘/权重/状态 9 维高密度），自动计算加权综合贡献"
   - "v0.1 (2026-05-23): 初版,5 支柱 + 5 步流程 + N=1 量化基金案例"
 distilled_from:
@@ -164,6 +165,61 @@ var FACTOR_DB = {
 - 用户已经看完流程图和矩阵，想"再深一层"看单因子。否则会信息过载。
 
 参考 [templates/scaffold.html](templates/scaffold.html) 末尾的 **§Drill-Down Demo** 段落直接 fork 即用。
+
+### 支柱 6（v0.3 升级）· 因子卡组「风格聚类」高互动联动层
+
+把支柱 5 的"单因子卡"再升一层：**让卡片之间不再是孤立矩阵格子，而是按风格聚类活起来**。
+
+**核心 3 字段（每个因子新增）**：
+
+```javascript
+'Factor-X_Large':{
+  arch:1, dom:'L', /*...原有 9 维...*/
+
+  // v0.3 新增 3 字段
+  cluster: 'M1',                                // 风格聚类编号(M1=核心动量/L1=微盘同质/D1=低波防御...)
+  tags: ['动量','低换手','核心主力'],            // 多标签(可点击同 tag 联动)
+  signature: [                                  // Barra 风格指纹(渲染为彩色 chip)
+    {k:'momentum', v:0.36, pos:1},              // pos=1 绿 / pos=0 红 / warn=1 警告
+    {k:'IR60', v:25.18, pos:0, warn:1}          // 异常值 warning chip
+  ]
+}
+```
+
+**4 个联动维度（hover/click 全方位）**：
+
+| 触发 | 联动目标 | 视觉表现 |
+|---|---|---|
+| Hover 卡片 | cluster mini-map 对应气泡放大 + 同 cluster 兄弟气泡呼应 | 卡片 lift + 气泡 active |
+| Hover 气泡 | 对应卡片放大 + 同 cluster 兄弟卡片金边 | 卡片 scroll into view |
+| Click cluster 气泡 / 洞察 | 同 cluster 全卡片金色边框,其他卡 dim 32% | 4 向同步 |
+| Click tag chip | 全部带此 tag 的卡片蓝色边框,tag chip active | 跨 cluster 横切联动 |
+
+**4 个动感细节（让"高审美"落地）**：
+
+1. **卡片 stagger 入场** — 7 张卡按 60ms 阶梯延迟入场，cubic-bezier(.22,.61,.36,1)
+2. **状态徽章脉冲** — 红色已失效 2s 脉冲 / 蓝色在研 3s 呼吸（CSS radial-gradient + opacity keyframe）
+3. **签名 chip 编码色** — Barra 正暴露绿 / 负暴露红 / 警告值（IR>20 等）红警告 + warn 角标
+4. **cluster mini-map 气泡** — 大小 ∝ weight，颜色 ∝ state，按圆形布局，center 点匀分布
+
+**聚类洞察侧栏（"替用户做完一半决策"）**：
+每个 cluster 自动汇总：因子数 / 总权重 / 状态分布 dot / 主导 signature / 加权 2026 贡献。
+
+**N=1 跑通对照数据**（cascading-causal-cockpit v0.3 dry-run）：
+
+| Cell | 因子数 | 风格簇数 | 加权 2026 | 含义 |
+|---|---|---|---|---|
+| ① 健康 × 输出 X | 5 | **2 簇**(M1+M2) | **+0.72%** | 多样化 + 健康 |
+| ④ 同质 × 输出 Y | 6 | **1 簇**(L1) | **−2.89%** | 单簇 crowding |
+
+**3.61pp 差距 × 簇数(2 vs 1)** = "风格分散度→业绩"因果链在卡组层级被双轴量化。
+
+**何时启用 v0.3 层（升级判断）**：
+- 单 archetype × 产品的因子卡 ≥ 4（卡少于 3 张不需要 cluster map，反而冗余）
+- 因子之间存在自然分簇（如：动量族 / 价值族 / 同质族），不只是按 archetype 一刀切
+- 你能给出 Barra 暴露 / 风格签名 / 多标签，否则降级到 v0.2 即可
+
+参考 scaffold v0.3 的 `var FACTOR_DB` + `renderClusterMap()` + `bindClusterInteractions()` 三段直接 fork。
 
 ---
 
