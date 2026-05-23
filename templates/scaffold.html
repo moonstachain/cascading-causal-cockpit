@@ -62,6 +62,60 @@ rect.prod-active{
 .svg-info-panel .lab{color:var(--gold);font-weight:700;margin-right:8px}
 
 .svg-container{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:12px;margin:12px 0;overflow-x:auto}
+
+/* ===== v0.2 升级: 矩阵下钻 ===== */
+h2{font-size:18px;color:var(--gold-s);margin:24px 0 10px}
+.tw{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:10px}
+table.matrix{width:100%;border-collapse:collapse;font-size:13px;min-width:520px}
+table.matrix th,table.matrix td{padding:8px 11px;text-align:left;border-bottom:1px solid var(--line)}
+table.matrix th{background:var(--surf2);color:var(--gold-s);font-weight:600;font-size:12.5px}
+table.matrix td{color:var(--txt2)}
+table.matrix tr:last-child td{border-bottom:none}
+table.matrix td.num,table.matrix th.num{font-family:var(--mono);text-align:right}
+table.matrix .heat-g{background:rgba(61,214,140,.13)}
+table.matrix .heat-r{background:rgba(229,72,77,.15)}
+
+td.matrix-cell{cursor:pointer;transition:background .15s,box-shadow .15s;position:relative}
+td.matrix-cell:hover{background:rgba(200,160,90,.15)!important;box-shadow:inset 0 0 0 1px var(--gold)}
+td.matrix-cell.active{background:rgba(200,160,90,.22)!important;box-shadow:inset 0 0 0 2px var(--gold)}
+td.matrix-cell::after{content:"⊕";position:absolute;top:2px;right:4px;color:var(--gold-d);font-size:9px;opacity:0;transition:opacity .15s}
+td.matrix-cell:hover::after{opacity:.7}
+
+#matrix-drilldown{margin:14px 0 0;background:linear-gradient(180deg,var(--surf2),var(--surf));border:1px solid var(--gold-d);border-radius:10px;padding:16px;display:none}
+#matrix-drilldown.show{display:block;animation:slideDown .25s ease-out}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.dd-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--line2)}
+.dd-title{font-size:15px;color:var(--gold-s);font-weight:700}
+.dd-title b{color:var(--gold)}
+.dd-close{background:var(--surf3);color:var(--txt2);border:1px solid var(--line2);border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;transition:.15s}
+.dd-close:hover{background:var(--red-bg);color:#ff8a8e;border-color:#5a2326}
+.dd-meta{color:var(--txt3);font-size:12px;margin-bottom:12px}
+.dd-meta b{color:var(--gold-s)}
+.fcard-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.fcard-detail{background:var(--bg2);border:1px solid var(--line);border-left:3px solid var(--gold-d);border-radius:8px;padding:11px 13px;font-size:12px}
+.fcard-detail.state-g{border-left-color:var(--green)}
+.fcard-detail.state-y{border-left-color:var(--amber)}
+.fcard-detail.state-r{border-left-color:var(--red)}
+.fcard-detail.state-b{border-left-color:var(--blue)}
+.fc-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;padding-bottom:6px;border-bottom:1px dashed var(--line)}
+.fc-name{font-family:var(--mono);font-size:12.5px;color:var(--gold-s);font-weight:700}
+.fc-state{font-size:10.5px;padding:1px 6px;border-radius:4px}
+.fc-state.g{background:var(--green-bg);color:#7fe0ad;border:1px solid #1d4733}
+.fc-state.y{background:var(--amber-bg);color:#ffd28a;border:1px solid #574019}
+.fc-state.r{background:var(--red-bg);color:#ff8a8e;border:1px solid #5a2326}
+.fc-state.b{background:rgba(106,166,232,.13);color:var(--blue);border:1px solid rgba(106,166,232,.35)}
+.fc-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:4px 8px;margin-bottom:8px}
+.fc-metric{display:flex;flex-direction:column;font-size:10.5px}
+.fc-metric .ml{color:var(--txt3)}
+.fc-metric .mv{color:var(--txt);font-family:var(--mono);font-weight:600;font-size:11.5px}
+.fc-foot{display:flex;justify-content:space-between;padding-top:6px;border-top:1px dashed var(--line);font-size:11px;color:var(--txt2)}
+.fc-foot b.pos{color:var(--green);font-family:var(--mono)}
+.fc-foot b.neg{color:var(--red);font-family:var(--mono)}
+.fc-foot b.amb{color:var(--amber);font-family:var(--mono)}
+.fc-note{margin-top:6px;font-size:10.5px;color:var(--txt3);font-style:italic;line-height:1.5}
+.dd-summary{margin-top:12px;padding:10px 13px;background:var(--bg2);border:1px solid var(--line);border-radius:6px;font-size:12px;color:var(--txt2)}
+.dd-summary b{color:var(--gold-s)}
+.dd-empty{padding:24px;text-align:center;color:var(--txt3);font-size:13px;font-style:italic}
 </style></head><body>
 
 <div class="wrap">
@@ -168,7 +222,159 @@ rect.prod-active{
       <span class="lab">已选 archetype:</span><span id="causal-info-text">—</span>
     </div>
   </div>
+
+  <!-- ============ v0.2 升级: 矩阵 + 单因子下钻 Demo ============ -->
+  <h2>§ B/B+ 矩阵 + 单因子下钻 Demo</h2>
+  <div class="svg-hint">💡 <span>点击下方矩阵任意 <b>百分比单元</b> → 浮出该 (archetype × 输出) 组合的单因子卡组（含 IC/IR/夏普/回撤/换手 9 维高密度信息 + 加权综合贡献）。</span></div>
+
+  <div class="tw"><table class="matrix">
+    <tr>
+      <th>archetype \ 输出</th>
+      <th class="num">输出 X<br><span style="color:var(--green);font-size:10px">L</span></th>
+      <th class="num">输出 Y<br><span style="color:var(--red);font-size:10px">S</span></th>
+      <th class="num">输出 Z<br><span style="color:var(--gold-s);font-size:10px">L,S</span></th>
+    </tr>
+    <tr>
+      <td>① archetype 健康</td>
+      <td class="num heat-g matrix-cell" data-arch="1" data-prod="输出 X">★ 50%</td>
+      <td class="num matrix-cell" data-arch="1" data-prod="输出 Y">15%</td>
+      <td class="num matrix-cell" data-arch="1" data-prod="输出 Z">30%</td>
+    </tr>
+    <tr>
+      <td>② archetype 震荡</td>
+      <td class="num matrix-cell" data-arch="2" data-prod="输出 X">30%</td>
+      <td class="num matrix-cell" data-arch="2" data-prod="输出 Y">25%</td>
+      <td class="num heat-g matrix-cell" data-arch="2" data-prod="输出 Z">★ 40%</td>
+    </tr>
+    <tr>
+      <td>③ archetype 待加固 ⚠</td>
+      <td class="num matrix-cell" data-arch="3" data-prod="输出 X">20%</td>
+      <td class="num heat-r matrix-cell" data-arch="3" data-prod="输出 Y">★ 60%</td>
+      <td class="num matrix-cell" data-arch="3" data-prod="输出 Z">30%</td>
+    </tr>
+  </table></div>
+
+  <div id="matrix-drilldown">
+    <div class="dd-head">
+      <div class="dd-title">⊕ <b id="dd-arch">—</b> × <b id="dd-prod">—</b> <span style="color:var(--txt3);font-weight:400">的因子构成</span></div>
+      <button class="dd-close" onclick="closeDD()">关闭 ✕</button>
+    </div>
+    <div class="dd-meta" id="dd-meta">—</div>
+    <div class="fcard-grid" id="dd-cards"></div>
+    <div class="dd-summary" id="dd-summary"></div>
+  </div>
 </div>
+
+<script>
+// ===== v0.2 升级: FACTOR_DB + 矩阵下钻 =====
+(function(){
+  // 替换为你的系统的因子库。键 = 因子名,值 = 9 维 metric + 状态 + 注记
+  var FACTOR_DB={
+    // archetype 1 健康 (Large 域)
+    'Factor-A_Large':{arch:1,dom:'L',ic20:0.22,ic60:0.77,ir60:4.49,sharpe:1.69,maxdd:-0.039,turnover:0.37,state:'g',state_label:'红利期',rt2026:0.0112,weight:35,note:'现役主力,核心贡献者'},
+    'Factor-B_Large':{arch:1,dom:'L',ic20:0.48,ic60:0.70,ir60:2.11,sharpe:2.38,maxdd:-0.046,turnover:0.54,state:'g',state_label:'红利期',rt2026:0.0218,weight:30,note:'新一代主力'},
+    'Factor-C_Large':{arch:1,dom:'L',ic20:0.56,ic60:0.83,ir60:5.89,sharpe:3.85,maxdd:-0.021,turnover:0.61,state:'y',state_label:'震荡',rt2026:-0.0026,weight:20,note:'IC 较高但拟合度边界'},
+    'Factor-D_Large':{arch:1,dom:'L',ic20:0.84,ic60:0.95,ir60:25.18,sharpe:3.64,maxdd:-0.022,turnover:0.43,state:'y',state_label:'平台期',rt2026:-0.0054,weight:15,note:'⚠ IR60 异常高,典型过拟合signature'},
+
+    // archetype 2 震荡 (跨 L,S 两域)
+    'Factor-E_Large':{arch:2,dom:'L',ic20:0.40,ic60:0.55,ir60:3.0,sharpe:1.8,maxdd:-0.045,turnover:0.32,state:'y',state_label:'震荡',rt2026:0.003,weight:50,note:'攻坚中,Large 域表现稳健'},
+    'Factor-F_Small':{arch:2,dom:'S',ic20:0.35,ic60:0.45,ir60:2.0,sharpe:1.3,maxdd:-0.060,turnover:0.55,state:'y',state_label:'震荡',rt2026:-0.005,weight:50,note:'Small 域震荡中'},
+
+    // archetype 3 待加固 (Small 域,同质)
+    'Factor-G_Small':{arch:3,dom:'S',ic20:0.70,ic60:0.88,ir60:11.30,sharpe:1.88,maxdd:-0.031,turnover:0.56,state:'r',state_label:'已失效',rt2026:-0.0445,weight:30,note:'⚠ size 暴露 −2σ 同质组'},
+    'Factor-H_Small':{arch:3,dom:'S',ic20:0.73,ic60:0.92,ir60:30.56,sharpe:3.47,maxdd:-0.010,turnover:0.55,state:'r',state_label:'已失效',rt2026:-0.0399,weight:25,note:'⚠ IR 最高,实盘最惨,典型过拟合'},
+    'Factor-I_Small':{arch:3,dom:'S',ic20:0.68,ic60:0.90,ir60:25.49,sharpe:2.67,maxdd:-0.012,turnover:0.48,state:'r',state_label:'已失效',rt2026:-0.0168,weight:25,note:'同质 size 暴露'},
+    '其他 5 个 _Small 因子':{arch:3,dom:'S',ic20:0,ic60:0,ir60:0,sharpe:0,maxdd:0,turnover:0,state:'r',state_label:'同质组',rt2026:-0.02,weight:20,note:'聚合卡:其余 5 因子,Barra 同质,2026 普遍走弱'}
+  };
+
+  var PRODUCT_DOMS={'输出 X':['L'],'输出 Y':['S'],'输出 Z':['L','S']};
+  var ARCH_NAMES={1:'① archetype 健康',2:'② archetype 震荡',3:'③ archetype 待加固'};
+
+  var ddPanel=document.getElementById('matrix-drilldown');
+  var ddArch=document.getElementById('dd-arch');
+  var ddProd=document.getElementById('dd-prod');
+  var ddMeta=document.getElementById('dd-meta');
+  var ddCards=document.getElementById('dd-cards');
+  var ddSummary=document.getElementById('dd-summary');
+  var activeCell=null;
+
+  window.closeDD=function(){if(activeCell){activeCell.classList.remove('active');activeCell=null;}ddPanel.classList.remove('show');};
+
+  function fmtPct(v){return v?((v>0?'+':'')+(v*100).toFixed(2)+'%'):'—';}
+  function fmtNum(v,d){return v?v.toFixed(d===undefined?2:d):'—';}
+
+  function renderCard(name,f){
+    var s=f.state||'b';
+    var rtClass=f.rt2026>0?'pos':(f.rt2026<0?'neg':'amb');
+    return '<div class="fcard-detail state-'+s+'">'+
+      '<div class="fc-head"><span class="fc-name">'+name+'</span><span class="fc-state '+s+'">'+(f.state_label||'')+'</span></div>'+
+      '<div class="fc-metrics">'+
+        '<div class="fc-metric"><span class="ml">IC20</span><span class="mv">'+fmtNum(f.ic20,2)+'</span></div>'+
+        '<div class="fc-metric"><span class="ml">IC60</span><span class="mv">'+fmtNum(f.ic60,2)+'</span></div>'+
+        '<div class="fc-metric"><span class="ml">IR60</span><span class="mv">'+fmtNum(f.ir60,2)+'</span></div>'+
+        '<div class="fc-metric"><span class="ml">夏普</span><span class="mv">'+fmtNum(f.sharpe,2)+'</span></div>'+
+        '<div class="fc-metric"><span class="ml">回撤</span><span class="mv">'+(f.maxdd?(f.maxdd*100).toFixed(1)+'%':'—')+'</span></div>'+
+        '<div class="fc-metric"><span class="ml">换手</span><span class="mv">'+fmtNum(f.turnover,2)+'</span></div>'+
+      '</div>'+
+      '<div class="fc-foot">'+
+        '<span>2026 实盘: <b class="'+rtClass+'">'+fmtPct(f.rt2026)+'</b></span>'+
+        '<span>arch 权重: <b style="color:var(--gold-s)">'+(f.weight||'?')+'%</b></span>'+
+      '</div>'+
+      '<div class="fc-note">'+(f.note||'')+'</div>'+
+      '</div>';
+  }
+
+  function activateCell(cell){
+    if(activeCell)activeCell.classList.remove('active');
+    activeCell=cell; cell.classList.add('active');
+    var archId=parseInt(cell.dataset.arch);
+    var prod=cell.dataset.prod;
+    var pct=cell.textContent.replace(/[\s★]/g,'').trim();
+    ddArch.textContent=ARCH_NAMES[archId]||archId;
+    ddProd.textContent=prod;
+    ddMeta.innerHTML='该 archetype 在 <b>'+prod+'</b> 输出中占 <b style="color:var(--gold)">'+pct+'</b> 配方贡献。展开后看构成该 archetype 的实际单因子卡组：';
+
+    var targetDoms=PRODUCT_DOMS[prod]||[];
+    var matched=[];
+    for(var name in FACTOR_DB){
+      var f=FACTOR_DB[name];
+      if(f.arch!==archId) continue;
+      var fdoms=(f.dom||'').split(',').map(function(d){return d.trim();});
+      if(fdoms.some(function(d){return targetDoms.indexOf(d)>=0})) matched.push([name,f]);
+    }
+    var order={g:0,y:1,b:2,r:3};
+    matched.sort(function(a,b){
+      var d=(order[a[1].state]||9)-(order[b[1].state]||9);
+      if(d!==0) return d;
+      return (b[1].weight||0)-(a[1].weight||0);
+    });
+
+    if(matched.length===0){
+      ddCards.innerHTML='<div class="dd-empty">该组合的单因子数据待录入或在研中</div>';
+      ddSummary.innerHTML='';
+    }else{
+      ddCards.innerHTML=matched.map(function(p){return renderCard(p[0],p[1])}).join('');
+      var sumG=matched.filter(function(p){return p[1].state==='g'}).length;
+      var sumY=matched.filter(function(p){return p[1].state==='y'}).length;
+      var sumR=matched.filter(function(p){return p[1].state==='r'}).length;
+      var sumB=matched.filter(function(p){return p[1].state==='b'}).length;
+      var totalRt=matched.reduce(function(s,p){return s+(p[1].rt2026||0)*(p[1].weight||0)/100},0);
+      ddSummary.innerHTML='<b>'+matched.length+' 个因子</b>构成此 archetype · 状态: '+
+        (sumG?'<span style="color:var(--green)">🟢 红利 '+sumG+'</span> ':'')+
+        (sumY?'<span style="color:var(--amber)">🟡 震荡 '+sumY+'</span> ':'')+
+        (sumR?'<span style="color:var(--red)">🔴 失效 '+sumR+'</span> ':'')+
+        (sumB?'<span style="color:var(--blue)">🔵 在研 '+sumB+'</span>':'')+
+        ' · 加权 2026 综合贡献: <b style="font-family:var(--mono);color:'+(totalRt>0?'var(--green)':'var(--red)')+'">'+(totalRt>0?'+':'')+(totalRt*100).toFixed(2)+'%</b>';
+    }
+    ddPanel.classList.add('show');
+    ddPanel.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+
+  document.querySelectorAll('td.matrix-cell').forEach(function(cell){
+    cell.addEventListener('click',function(){if(activeCell===cell){closeDD();return;}activateCell(cell);});
+  });
+})();
+</script>
 
 <script>
 // ===== 核心: ARCH_MAP 字典 + 点击交互 =====
